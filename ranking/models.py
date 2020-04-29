@@ -22,7 +22,7 @@ class RankingList(models.Model):
     score = models.IntegerField(verbose_name='分值')
 
     class Meta:
-        ordering = ['score']
+        ordering = ['-score']
         verbose_name = '客户端排名表'
         verbose_name_plural = '客户端排名表'
 

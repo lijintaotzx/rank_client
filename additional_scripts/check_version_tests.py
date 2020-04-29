@@ -1,7 +1,7 @@
 # coding=utf-8
 import unittest
 
-from scripts.check_version_script import check_version
+from additional_scripts.check_version_script import check_version
 
 
 class TestCheckVersion(unittest.TestCase):

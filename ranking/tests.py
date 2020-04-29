@@ -18,8 +18,11 @@ class RankScoreViewTest(APITestCase):
         ]
         self.correct_parameter_list.extend(
             [
-                {'client_name': '客户端{}'.format(client_id), 'score': random.randint(1, 10000000)}
-                for client_id in range(1, 6)
+                {'client_name': '客户端1', 'score': 11},
+                {'client_name': '客户端2', 'score': 12},
+                {'client_name': '客户端3', 'score': 13},
+                {'client_name': '客户端4', 'score': 14},
+                {'client_name': '客户端5', 'score': 15},
             ]
         )
 
@@ -42,6 +45,14 @@ class RankScoreViewTest(APITestCase):
         # 检查RankingList数据
         ranking_list_count = RankingList.objects.count()
         self.assertEqual(ranking_list_count, 10)
+
+        # 抽样检查排名表中的数据是不是最新的
+        client_1_ranking_score = RankingList.objects.get(client_name='客户端1').score
+        client_3_ranking_score = RankingList.objects.get(client_name='客户端3').score
+        client_4_ranking_score = RankingList.objects.get(client_name='客户端4').score
+        self.assertEqual(client_1_ranking_score, 11)
+        self.assertEqual(client_3_ranking_score, 13)
+        self.assertEqual(client_4_ranking_score, 14)
 
     # 测试错误参数的API调用结果，以及ClientScore表 和 RankingList表
     def test_create_client_score_with_error_parameter(self):
@@ -82,6 +93,8 @@ class RankingListViewTest(APITestCase):
         self.error_my_client_name = '这是一个错误的客户端名称！'
         self.start_parameter = 3
         self.end_parameter = 6
+        self.error_start_parameter = '这是一个错误的开始时间'
+        self.error_end_parameter = '这是一个错误的结束时间'
 
     # 测试不加时间间隔参数的调用结果
     def test_get_ranking_list_without_interval(self):
@@ -128,6 +141,17 @@ class RankingListViewTest(APITestCase):
     # 测试错误参数的调用结果
     def test_get_ranking_list_with_error_parameter(self):
         response = self.client.get(self.url, {'my_client_name': self.error_my_client_name})
+
+        # 检查接口返回状态码
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    # 测试错误的时间间隔参数调用结果
+    def test_get_ranking_list_with_error_interval(self):
+        response = self.client.get(self.url, {
+            'my_client_name': self.correct_my_client_name,
+            'start': self.error_start_parameter,
+            'end': self.error_end_parameter,
+        })
 
         # 检查接口返回状态码
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

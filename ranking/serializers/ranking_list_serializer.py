@@ -12,6 +12,8 @@ class RankingListSerializer(serializers.ModelSerializer):
 
 class ClientNameSerializer(serializers.Serializer):
     my_client_name = serializers.CharField(max_length=64)
+    start = serializers.IntegerField(default=None)
+    end = serializers.IntegerField(default=None)
 
     def validate_my_client_name(self, data):
         rank_filter = RankingList.objects.filter(client_name=data).count()

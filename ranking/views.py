@@ -44,5 +44,10 @@ class RankingListView(ListAPIView):
         s = ClientNameSerializer(data=request.query_params)
         if s.is_valid():
             serializer_data = super(ListAPIView, self).list(request, *args, **kwargs)
-            return self.insert_my_score(serializer_data, s.data['my_client_name'])
+            if s.data['start'] and s.data['end']:
+                serializer_data.data = serializer_data.data[s.data['start'] - 1:s.data['end']]
+            return self.insert_my_score(
+                serializer_data,
+                s.data['my_client_name']
+            )
         return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
